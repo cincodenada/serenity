@@ -2,14 +2,22 @@
 port="libicu"
 version="68.2"
 dashversion=${version/./-}
-files="https://github.com/unicode-org/icu/archive/refs/tags/release-${dashversion}.tar.gz ${port}-${version}.tar.gz
-https://github.com/unicode-org/icu/releases/download/release-${dashversion}/icu4c-${version/./_}-Ubuntu20.04-x64.tgz icu4c-host.tgz
-"
+files="https://github.com/unicode-org/icu/releases/download/release-68-2/icu4c-68_2-src.tgz ${port}-${version}.tar.gz"
 depends=""
-workdir=icu-release-${version/./-}/icu4c/source
+workdir=icu/source
 useconfigure="true"
 configscript="runConfigureICU"
-configopts="--with-cross-build ${workdir}/../../../icu"
+configopts="--with-cross-build=$(realpath ${workdir}/../../icu-host/build)"
+
+#post_fetch() {
+#    # Build the host ICU??
+#    # I just do this manually for now
+#    if [ ! -d icu-host ]; then
+#        cp -r icu icu-host
+#        mkdir -p icu-host/build
+#        (cd icu-host/build && ../source/runConfigureICU Linux && make)
+#    fi
+#}
 
 configure() {
     chmod +x "${workdir}"/"$configscript"
