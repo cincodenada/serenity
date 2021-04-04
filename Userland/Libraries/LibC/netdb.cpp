@@ -673,4 +673,15 @@ const char* gai_strerror(int errcode)
     (void)errcode;
     return "Not yet implemented";
 }
+int getnameinfo(const struct sockaddr* __restrict addr, socklen_t addrlen, char* __restrict host, socklen_t hostlen, char* __restrict serv, socklen_t servlen, int flags);
+{
+    (void)addr;
+    (void)addrlen;
+    (void)host;
+    (void)hostlen;
+    (void)serv;
+    (void)servlen;
+    (void)flags;
+    VERIFY_NOT_REACHED();
+}
 }

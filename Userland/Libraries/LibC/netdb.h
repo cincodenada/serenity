@@ -110,4 +110,18 @@ int getaddrinfo(const char* __restrict node, const char* __restrict service, con
 void freeaddrinfo(struct addrinfo* res);
 const char* gai_strerror(int errcode);
 
+#define NI_MAXHOST 1025
+#define NI_MAXSERV 32
+
+#define NI_NAMEREQD 0x0001
+#define NI_DGRAM 0x0002
+#define NI_NOFQDN 0x0004
+#define NI_NUMERICHOST 0x0008
+#define NI_NUMERICSERV 0x0010
+#define NI_IDN 0x0020
+#define NI_IDN_ALLOW_UNASSIGNED 0x0040
+#define NI_IDN_USES_STD3_ASCII_RULES 0x0080
+
+int getnameinfo(const struct sockaddr* __restrict addr, socklen_t addrlen, char* __restrict host, socklen_t hostlen, char* __restrict serv, socklen_t servlen, int flags);
+
 __END_DECLS
