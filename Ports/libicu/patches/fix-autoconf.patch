@@ -1,6 +1,17 @@
-diff -r -u icu-release-68-2-base/icu4c/source/config.sub icu-release-68-2/icu4c/source/config.sub
---- source/config.sub	2021-04-04 11:31:56.837138103 -0700
-+++ source/config.sub	2021-04-04 12:07:58.610685441 -0700
+diff -r -u icu/source/acinclude.m4 icu-host/source/acinclude.m4
+--- icu-host/source/acinclude.m4	2021-04-04 13:09:07.859008251 -0700
++++ icu/source/acinclude.m4	2021-04-04 12:20:59.444891940 -0700
+@@ -80,6 +80,7 @@
+ *-apple-darwin*)	icu_cv_host_frag=mh-darwin ;;
+ *-*-beos)       icu_cv_host_frag=mh-beos ;; 
+ *-*-haiku)      icu_cv_host_frag=mh-haiku ;; 
++*-serenity)      icu_cv_host_frag=mh-serenity ;;
+ *-*-irix*)	icu_cv_host_frag=mh-irix ;;
+ *-dec-osf*) icu_cv_host_frag=mh-alpha-osf ;;
+ *-*-nto*)	icu_cv_host_frag=mh-qnx ;;
+diff -r -u icu/source/config.sub icu-host/source/config.sub
+--- icu/source/config.sub	2021-04-04 13:01:43.568565787 -0700
++++ icu-host/source/config.sub	2021-04-04 12:20:59.444891940 -0700
 @@ -1404,7 +1404,7 @@
  	      | -bosx* | -nextstep* | -cxux* | -aout* | -elf* | -oabi* \
  	      | -ptx* | -coff* | -ecoff* | -winnt* | -domain* | -vsta* \
@@ -10,9 +21,20 @@ diff -r -u icu-release-68-2-base/icu4c/source/config.sub icu-release-68-2/icu4c/
  	      | -cygwin* | -msys* | -pe* | -psos* | -moss* | -proelf* | -rtems* \
  	      | -midipix* | -mingw32* | -mingw64* | -linux-gnu* | -linux-android* \
  	      | -linux-newlib* | -linux-musl* | -linux-uclibc* \
-diff -r -u icu-release-68-2-base/icu4c/source/runConfigureICU icu-release-68-2/icu4c/source/runConfigureICU
---- source/runConfigureICU	2021-04-04 11:31:56.837138103 -0700
-+++ source/runConfigureICU	2021-04-04 12:06:31.133061425 -0700
+diff -r -u icu/source/configure.ac icu-host/source/configure.ac
+--- icu-host/source/configure.ac	2021-04-04 13:10:08.120384839 -0700
++++ icu/source/configure.ac	2021-04-04 12:20:59.444891940 -0700
+@@ -1298,6 +1298,7 @@
+ 	*-*-nto*)	platform=U_QNX ;;
+ 	*-dec-osf*) 	platform=U_OSF ;;
+ 	*-*-beos)		platform=U_BEOS ;;
++	*-serenity)		platform=U_SERENITY ;;
+ 	*-*-irix*)		platform=U_IRIX ;;
+ 	*-ncr-*)		platform=U_MPRAS ;;
+ 	*) 		platform=U_UNKNOWN_PLATFORM ;;
+diff -r -u icu/source/runConfigureICU icu-host/source/runConfigureICU
+--- icu-host/source/runConfigureICU	2021-04-04 13:01:43.568565787 -0700
++++ icu/source/runConfigureICU	2021-04-04 12:20:59.444891940 -0700
 @@ -252,6 +252,14 @@
          DEBUG_CFLAGS='-g'
          DEBUG_CXXFLAGS='-g'
@@ -28,3 +50,93 @@ diff -r -u icu-release-68-2-base/icu4c/source/runConfigureICU icu-release-68-2/i
      Cygwin)
          THE_OS="Cygwin"
          THE_COMP="the GNU C++"
+--- icu-host/source/config/mh-serenity	1969-12-31 16:00:00.000000000 -0800
++++ icu/source/config/mh-serenity	2021-04-04 12:58:21.293604604 -0700
+@@ -0,0 +1,87 @@
++## -*-makefile-*-
++## Copyright (C) 2016 and later: Unicode, Inc. and others.
++## License & terms of use: http://www.unicode.org/copyright.html
++## Linux-specific setup
++## Copyright (c) 1999-2013, International Business Machines Corporation and
++## others. All Rights Reserved.
++
++## Commands to generate dependency files
++GEN_DEPS.c=  $(CC) -E -MM $(DEFS) $(CPPFLAGS)
++GEN_DEPS.cc= $(CXX) -E -MM $(DEFS) $(CPPFLAGS) $(CXXFLAGS)
++
++## Flags for position independent code
++SHAREDLIBCFLAGS = -fPIC
++SHAREDLIBCXXFLAGS = -fPIC
++SHAREDLIBCPPFLAGS = -DPIC
++
++## Additional flags when building libraries and with threads
++THREADSCPPFLAGS = -D_REENTRANT
++LIBCPPFLAGS =
++
++## Compiler switch to embed a runtime search path
++LD_RPATH= -Wl,-zorigin,-rpath,'$$'ORIGIN 
++LD_RPATH_PRE = -Wl,-rpath,
++
++## These are the library specific LDFLAGS
++LDFLAGSICUDT=-nodefaultlibs -nostdlib
++
++## Compiler switch to embed a library name
++# The initial tab in the next line is to prevent icu-config from reading it.
++	LD_SONAME = -Wl,-soname -Wl,$(notdir $(MIDDLE_SO_TARGET))
++#SH# # We can't depend on MIDDLE_SO_TARGET being set.
++#SH# LD_SONAME=
++
++## Shared library options
++LD_SOOPTIONS= -Wl,-Bsymbolic
++
++## Shared object suffix
++SO = so
++## Non-shared intermediate object suffix
++STATIC_O = ao
++
++## Compilation rules
++%.$(STATIC_O): $(srcdir)/%.c
++	$(call SILENT_COMPILE,$(strip $(COMPILE.c) $(STATICCPPFLAGS) $(STATICCFLAGS)) -o $@ $<)
++%.o: $(srcdir)/%.c
++	$(call SILENT_COMPILE,$(strip $(COMPILE.c) $(DYNAMICCPPFLAGS) $(DYNAMICCFLAGS)) -o $@ $<)
++
++%.$(STATIC_O): $(srcdir)/%.cpp
++	$(call SILENT_COMPILE,$(strip $(COMPILE.cc) $(STATICCPPFLAGS) $(STATICCXXFLAGS)) -o $@ $<)
++%.o: $(srcdir)/%.cpp
++	$(call SILENT_COMPILE,$(strip $(COMPILE.cc) $(DYNAMICCPPFLAGS) $(DYNAMICCXXFLAGS)) -o $@ $<)
++
++
++## Dependency rules
++%.d: $(srcdir)/%.c
++	$(call ICU_MSG,(deps)) $<
++	@$(SHELL) -ec '$(GEN_DEPS.c) $< \
++		| sed '\''s%\($*\)\.o[ :]*%\1.o $@ : %g'\'' > $@; \
++		[ -s $@ ] || rm -f $@'
++
++%.d: $(srcdir)/%.cpp
++	$(call ICU_MSG,(deps)) $<
++	@$(SHELL) -ec '$(GEN_DEPS.cc) $< \
++		| sed '\''s%\($*\)\.o[ :]*%\1.o $@ : %g'\'' > $@; \
++		[ -s $@ ] || rm -f $@'
++
++## Versioned libraries rules
++
++%.$(SO).$(SO_TARGET_VERSION_MAJOR): %.$(SO).$(SO_TARGET_VERSION)
++	$(RM) $@ && ln -s ${<F} $@
++%.$(SO): %.$(SO).$(SO_TARGET_VERSION_MAJOR)
++	$(RM) $@ && ln -s ${*F}.$(SO).$(SO_TARGET_VERSION) $@
++
++##  Bind internal references
++
++# LDflags that pkgdata will use
++BIR_LDFLAGS= -Wl,-Bsymbolic
++
++# Dependencies [i.e. map files] for the final library
++BIR_DEPS=
++
++## Remove shared library 's'
++STATIC_PREFIX_WHEN_USED = 
++STATIC_PREFIX = 
++
++## End Linux-specific setup
++

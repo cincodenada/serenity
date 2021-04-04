@@ -5,9 +5,10 @@ dashversion=${version/./-}
 files="https://github.com/unicode-org/icu/releases/download/release-68-2/icu4c-68_2-src.tgz ${port}-${version}.tar.gz"
 depends=""
 workdir=icu/source
+patchlevel=2
 useconfigure="true"
 configscript="runConfigureICU"
-configopts="--with-cross-build=$(realpath ${workdir}/../../icu-host/build)"
+configopts="--with-cross-build=$(pwd)/icu-host/build"
 
 #post_fetch() {
 #    # Build the host ICU??
