@@ -1,0 +1,30 @@
+diff -r -u icu-release-68-2-base/icu4c/source/config.sub icu-release-68-2/icu4c/source/config.sub
+--- source/config.sub	2021-04-04 11:31:56.837138103 -0700
++++ source/config.sub	2021-04-04 12:07:58.610685441 -0700
+@@ -1404,7 +1404,7 @@
+ 	      | -bosx* | -nextstep* | -cxux* | -aout* | -elf* | -oabi* \
+ 	      | -ptx* | -coff* | -ecoff* | -winnt* | -domain* | -vsta* \
+ 	      | -udi* | -eabi* | -lites* | -ieee* | -go32* | -aux* \
+-	      | -chorusos* | -chorusrdb* | -cegcc* | -glidix* \
++	      | -chorusos* | -chorusrdb* | -cegcc* | -glidix* | -serenity* \
+ 	      | -cygwin* | -msys* | -pe* | -psos* | -moss* | -proelf* | -rtems* \
+ 	      | -midipix* | -mingw32* | -mingw64* | -linux-gnu* | -linux-android* \
+ 	      | -linux-newlib* | -linux-musl* | -linux-uclibc* \
+diff -r -u icu-release-68-2-base/icu4c/source/runConfigureICU icu-release-68-2/icu4c/source/runConfigureICU
+--- source/runConfigureICU	2021-04-04 11:31:56.837138103 -0700
++++ source/runConfigureICU	2021-04-04 12:06:31.133061425 -0700
+@@ -252,6 +252,14 @@
+         DEBUG_CFLAGS='-g'
+         DEBUG_CXXFLAGS='-g'
+         ;;
++    Serenity*)
++        THE_OS="Serenity"
++        THE_COMP="the GNU C++"
++        RELEASE_CFLAGS='-O3'
++        RELEASE_CXXFLAGS='-O3'
++        DEBUG_CFLAGS='-g'
++        DEBUG_CXXFLAGS='-g'
++        ;;
+     Cygwin)
+         THE_OS="Cygwin"
+         THE_COMP="the GNU C++"
